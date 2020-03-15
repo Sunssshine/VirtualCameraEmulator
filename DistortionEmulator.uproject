@@ -18,10 +18,6 @@
 		{
 			"Name": "RawInput",
 			"Enabled": true
-		},
-		{
-			"Name": "OpenCV",
-			"Enabled": true
 		}
 	]
 }
