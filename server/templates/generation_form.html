@@ -1,0 +1,244 @@
+<div class="mt-2 row ml-1 mr-1">
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <span class="float-right position-sticky fa fa-exclamation-circle" aria-hidden="true"
+                      data-toggle="tooltip" data-placement="top"
+                      title="Укажите позицию камеры, направление обзора и длительность перемещения к точке, после чего добавьте новую точку маршрута. Камера будет двигаться от точки к точке в соответствии с указанными параметрами."></span>
+                <div class="text-center">Маршрут</div>
+            </div>
+            <ul class="list-group list-group-flush" id="routeList">
+            </ul>
+            <div class="card-body"></div>
+            <div class="card-footer">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-2">
+                            <input type="number" step="0.0001" class="form-control" id="inputPosX" placeholder="X">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <input type="number" step="0.0001" class="form-control" id="inputPosY" placeholder="Y">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <input type="number" step="0.0001" class="form-control" id="inputPosZ" placeholder="Z">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <input type="number" step="0.0001" class="form-control" id="inputDuration"
+                                   placeholder="Длительность">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <input type="number" step="0.0001" class="form-control" id="directionX"
+                                   placeholder="Направление X">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <input type="number" step="0.0001" class="form-control" id="directionY"
+                                   placeholder="Направление Y">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <input type="number" step="0.0001" class="form-control" id="directionZ"
+                                   placeholder="Направление Z">
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-lg btn-block"
+                            onclick="addRoutePoint(getRoutePoint())">Добавить точку
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <span class="float-right position-sticky fa fa-exclamation-circle" aria-hidden="true"
+                      data-toggle="tooltip" data-placement="top"
+                      title="Укажите параметры трансформации объекта и тип объекта, после чего добавьте его используя кнопку 'Добавить объект'. Этот список описывает объекты, которые будут расположены на сцене."></span>
+                <div class="text-center">Объекты</div>
+            </div>
+            <ul class="list-group list-group-flush" id="objectsList">
+            </ul>
+            <div class="card-body"></div>
+            <div class="card-footer">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-5">
+                            <input type="number" step="0.0001" class="form-control" id="scaleX"
+                                   placeholder="Масштаб X">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <input type="number" step="0.0001" class="form-control" id="posX" placeholder="X">
+                        </div>
+                        <div class="form-group col-md-5">
+                            <input type="number" step="0.0001" class="form-control" id="rotationX"
+                                   placeholder="Поворот X">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-5">
+                            <input type="number" step="0.0001" class="form-control" id="scaleY"
+                                   placeholder="Масштаб Y">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <input type="number" step="0.0001" class="form-control" id="posY" placeholder="Y">
+                        </div>
+                        <div class="form-group col-md-5">
+                            <input type="number" step="0.0001" class="form-control" id="rotationY"
+                                   placeholder="Поворот Y">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-5">
+                            <input type="number" step="0.0001" class="form-control" id="scaleZ"
+                                   placeholder="Масштаб Z">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <input type="number" step="0.0001" class="form-control" id="posZ" placeholder="Z">
+                        </div>
+                        <div class="form-group col-md-5">
+                            <input type="number" step="0.0001" class="form-control" id="rotationZ"
+                                   placeholder="Поворот Z">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-12">
+                            <select class="form-group form-control" id="objectType">
+                                <option value="" selected disabled hidden>Тип объекта</option>
+                                <option>Куб</option>
+                                <option>Шар</option>
+                                <option>Цилиндр</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-lg btn-block"
+                            onclick="addObjectItem(getObjectItem())">Добавить объект
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <span class="float-right position-sticky fa fa-exclamation-circle" aria-hidden="true"
+                      data-toggle="tooltip" data-placement="top"
+                      title="Выберите тип искажения которое необходимо наложить на набор видеоданных, а затем добавьте его в список используя кнопку добавления элемента. Также, вы можете удалять элементы списка используя кнопку со знаком 'X'"></span>
+                <div class="text-center">Искажения</div>
+            </div>
+            <div class="" id="distortionsList"></div>
+            <div class="card-body"></div>
+            <div class="card-footer">
+                <form>
+                    <div class="form-row">
+                        <div class="col-md-12">
+                            <select class="form-group form-control" id="distortionType">
+                                <option value="" selected disabled hidden>Тип искажения</option>
+                                <option>Цифровой шум</option>
+                                <option>Монохроматическая абберация</option>
+                                <option>Хроматическая абберация</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-lg btn-block"
+                            onclick="addDistortionItem(getDistortion())">Добавить искажение
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card h-100">
+            <div class="card-header">
+                <span class="float-right position-sticky fa fa-exclamation-circle" aria-hidden="true"
+                      data-toggle="tooltip" data-placement="top"
+                      title="Заполните поля описывающие параметры камеры, которые будут использоваться для записи виртуального пространства, либо выберите одну из существующих камер с предзаданными параметрами."></span>
+                <div class="text-center">Параметры камеры</div>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="form-row">
+                        <div class="col-md-12">
+                            <select class="form-group form-control" id="cameraType">
+                                <option value="" selected disabled hidden>Пользовательская</option>
+                                <option>MyCamera</option>
+                                <option>CustomCamera</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input type="number" step="0.0001" class="form-control" id="cameraFov"
+                                   placeholder="Угол обзора">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-12">
+                            <select class="form-group form-control" id="aspectRatio">
+                                <option value="" selected disabled hidden>Соотношение сторон</option>
+                                <option>4:3</option>
+                                <option>16:9</option>
+                                <option>21:9</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input type="number" step="0.0001" class="form-control" id="cameraAperture"
+                                   placeholder="Апертура">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input type="number" step="0.0001" class="form-control" id="cameraIso"
+                                   placeholder="Светочувствительность (ISO)">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input type="number" class="form-control" id="cameraFps"
+                                   placeholder="Кол-во кадров в секунду">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input type="number" step="0.0001" class="form-control" id="cameraFocalDistance"
+                                   placeholder="Фокусное расстояние">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <input type="number" step="0.0001" class="form-control" id="cameraId"
+                                   placeholder="Идентификатор">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row mt-2">
+        <div class="col-sm-5">
+            <button type="button" class="btn btn-warning btn-lg btn-block"
+                    onclick="getGenerationParametersFile()">Сгенерировать случайные параметры
+            </button>
+        </div>
+        <div class="col-sm-4">
+            <button type="button" class="btn btn-success btn-lg btn-block" onclick="onGenerateButtonClick()">
+                Сгенерировать <i class="fa fa-cogs" aria-hidden="true"></i></button>
+        </div>
+        <div class="col-sm-3">
+            <select class="form-group form-control" id="videoFormat">
+                <option value="" selected disabled hidden>Формат видеоданных</option>
+                <option>.MOV</option>
+                <option>.MP4</option>
+                <option>.MPG</option>
+                <option>.OGG</option>
+                <option>.WEBM</option>
+                <option>.FLV</option>
+                <option>.AVI</option>
+                <option>.WMV</option>
+            </select>
+        </div>
+    </div>
+</div>

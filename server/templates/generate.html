@@ -1,0 +1,409 @@
+{% extends 'base.html' %}
+{% block header_content %}
+    <div id="processing-block-header" style="display: none">
+    <h4 class="col col-lg-12 display-5 text-left">
+        Ожидайте окончания генерации набора видеоданных
+    </h4>
+    <hr>
+    <h6 class="col col-lg-12 display-6 text-left">
+        Страница получения сгенерированного набора видеоданных появится автоматически после окончания генерации
+    </h6>
+    </div>
+    <div id="generation-block-header">
+    <h4 class="col col-lg-12 display-5 text-left">
+        Укажите параметры генерируемого набора видеоданных, либо воспользуйтесь кнопкой генерации случайного набора
+        параметров
+    </h4>
+    <hr>
+    <h6 class="col col-lg-12 display-6 text-left">
+        Для получения справки о данных требуемых для заполнения в каждом столбце, наведите курсор на знак <span class="fa fa-exclamation-circle"></span> в
+        соответствующем столбце.
+    </h6>
+    </div>
+    <div id="result-block-header" style="display: none">
+    <h4 class="col col-lg-12 display-5 text-left">
+        Вы можете получить сгенерированный набор видеоданных нажав на кнопку "Скачать"
+    </h4>
+    <hr>
+    <h6 class="col col-lg-12 display-6 text-left">
+        Ниже указаны параметры с которыми был сгенерирован набор видеоданных
+    </h6>
+    </div>
+{% endblock %}
+{% block content %}
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input::-webkit-input-placeholder {
+            font-size: 12px;
+            line-height: 3;
+        }
+    </style>
+    <div id="processing-block" style="display: none">
+        {% include 'processing.html'%}
+    </div>
+
+    <div id="generation-form">
+        {% include 'generation_form.html' %}
+    </div>
+
+    <div id="result-page" style="display: none">
+        {% include 'result.html' %}
+    </div>
+    <a id="downloadAnchorElem" style="display:none"></a>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+
+        class RouteListItem {
+            constructor(posX, posY, posZ, duration, directionX, directionY, directionZ) {
+                this.posX = posX;
+                this.posY = posY;
+                this.posZ = posZ;
+                this.duration = duration;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.directionZ = directionZ;
+                this.getAttr = function () {
+                    return {
+                        posX: this.posX,
+                        posY: this.posY,
+                        posZ: this.posZ,
+                        directionX: this.directionX,
+                        directionY: this.directionY,
+                        directionZ: this.directionZ,
+                        duration: this.duration
+                    }
+                }
+            }
+        }
+
+        class ObjectListItem {
+            constructor(posX, posY, posZ, scaleX, scaleY, scaleZ, rotateX, rotateY, rotateZ, type) {
+                this.posX = posX;
+                this.posY = posY;
+                this.posZ = posZ;
+                this.scaleX = scaleX;
+                this.scaleY = scaleY;
+                this.scaleZ = scaleZ;
+                this.rotationX = rotateX;
+                this.rotationY = rotateY;
+                this.rotationZ = rotateZ;
+                this.type = type;
+                this.getAttr = function () {
+                    return {
+                        posX: this.posX,
+                        posY: this.posY,
+                        posZ: this.posZ,
+                        scaleX: this.scaleX,
+                        scaleY: this.scaleY,
+                        scaleZ: this.scaleZ,
+                        rotationX: this.rotationX,
+                        rotationY: this.rotationY,
+                        rotationZ: this.rotationZ,
+                        type: this.type
+                    }
+                }
+            }
+        }
+
+        class DistortionsListItem {
+            constructor(type) {
+                this.type = type;
+                this.getAttr = function () {
+                    return {
+                        type: this.type
+                    }
+                }
+            }
+        }
+
+        class CameraParameters {
+            constructor(FOV, aspectRatio, aperture, ISO, FPS, focalDistance, cameraId) {
+                this.FOV = FOV;
+                this.aspectRatio = aspectRatio;
+                this.aperture = aperture;
+                this.ISO = ISO;
+                this.FPS = FPS;
+                this.focalDistance = focalDistance;
+                this.cameraId = cameraId;
+                this.getAttr = function () {
+                    return {
+                        FOV: this.FOV,
+                        aspectRatio: this.aspectRatio,
+                        ISO: this.ISO,
+                        FPS: this.FPS,
+                        focalDistance: this.focalDistance,
+                        cameraId: this.cameraId
+                    }
+                }
+            }
+
+        }
+
+        let routeList = [];
+        let objectsList = [];
+        let distortionsList = [];
+
+
+        function nodeIndex(el) {
+            var i = 0;
+            while (el.previousElementSibling) {
+                el = el.previousElementSibling;
+                i++;
+            }
+            return i;
+        }
+
+        function getRoutePoint() {
+            let posX = document.getElementById('inputPosX').value;
+            let posY = document.getElementById('inputPosY').value;
+            let posZ = document.getElementById('inputPosZ').value;
+            let duration = document.getElementById('inputDuration').value;
+            let directionX = document.getElementById('directionX').value;
+            let directionY = document.getElementById('directionY').value;
+            let directionZ = document.getElementById('directionZ').value;
+            return new RouteListItem(posX, posY, posZ, duration, directionX, directionY, directionZ);
+        }
+
+        function getObjectItem() {
+            let posX = document.getElementById('posX').value;
+            let posY = document.getElementById('posY').value;
+            let posZ = document.getElementById('posZ').value;
+            let scaleX = document.getElementById('scaleX').value;
+            let scaleY = document.getElementById('scaleY').value;
+            let scaleZ = document.getElementById('scaleZ').value;
+            let rotationX = document.getElementById('rotationX').value;
+            let rotationY = document.getElementById('rotationY').value;
+            let rotationZ = document.getElementById('rotationZ').value;
+            let objectType = document.getElementById('objectType').value;
+            return new ObjectListItem(posX, posY, posZ, scaleX, scaleY, scaleZ, rotationX, rotationY, rotationZ, objectType);
+        }
+
+        function getCameraParameters() {
+            let cameraFov = document.getElementById('cameraFov').value;
+            let aspectRatio = document.getElementById('aspectRatio').value;
+            let cameraAperture = document.getElementById('cameraAperture').value;
+            let cameraIso = document.getElementById('cameraIso').value;
+            let cameraFps = document.getElementById('cameraFps').value;
+            let cameraFocalDistance = document.getElementById('cameraFocalDistance').value;
+            let cameraId = document.getElementById('cameraId').value;
+            return new CameraParameters(cameraFov, aspectRatio, cameraAperture, cameraIso, cameraFps, cameraFocalDistance, cameraId);
+        }
+
+        function addRoutePoint(routeListItem) {
+
+            if (!routeListItem.posX.length ||
+                !routeListItem.posY.length ||
+                !routeListItem.posZ.length ||
+                !routeListItem.duration.length ||
+                !routeListItem.directionX.length ||
+                !routeListItem.directionY.length ||
+                !routeListItem.directionZ.length) {
+                alert("Заполните все поля описывающие точку маршрута!");
+                return;
+            }
+
+            let routeListElem = document.getElementById('routeList');
+            routeListElem.innerHTML += `
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col">
+                        <span class="badge badge-primary">X:${routeListItem.posX}</span>
+                        <span class="badge badge-primary">Y:${routeListItem.posY}</span>
+                        <span class="badge badge-primary">Z:${routeListItem.posZ}</span>
+                        <span class="badge badge-primary">Время:${routeListItem.duration}</span>
+                        <span class="badge badge-primary">Напр. X:${routeListItem.directionX}</span>
+                        <span class="badge badge-primary">Напр. Y:${routeListItem.directionY}</span>
+                        <span class="badge badge-primary">Напр. Z:${routeListItem.directionZ}</span>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-lg col-md-2" onclick="removeListElement(this, routeList)"><span class="float-center position-sticky fa fa-trash"></span></button>
+                </div>
+            </li>`
+            routeList.push(routeListItem);
+        }
+
+        function addObjectItem(objectItem) {
+
+            if (!objectItem.posX.length ||
+                !objectItem.posY.length ||
+                !objectItem.posZ.length ||
+                !objectItem.scaleX.length ||
+                !objectItem.scaleY.length ||
+                !objectItem.scaleZ.length ||
+                !objectItem.rotationX.length ||
+                !objectItem.rotationY.length ||
+                !objectItem.rotationZ.length ||
+                !objectItem.type.length
+            ) {
+                alert("Заполните все поля описывающие объект!");
+                return;
+            }
+
+            let objectsListElem = document.getElementById('objectsList');
+            objectsListElem.innerHTML += `
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col">
+                        <span class="badge badge-primary">X:${objectItem.posX}</span>
+                        <span class="badge badge-primary">Y:${objectItem.posY}</span>
+                        <span class="badge badge-primary">Z:${objectItem.posZ}</span>
+                        <span class="badge badge-primary">Масштаб X:${objectItem.scaleX}</span>
+                        <span class="badge badge-primary">Масштаб Y:${objectItem.scaleY}</span>
+                        <span class="badge badge-primary">Масштаб Z:${objectItem.scaleZ}</span>
+                        <span class="badge badge-primary">Поворот X:${objectItem.rotationX}</span>
+                        <span class="badge badge-primary">Поворот Y:${objectItem.rotationY}</span>
+                        <span class="badge badge-primary">Поворот Z:${objectItem.rotationZ}</span>
+                        <span class="badge badge-primary">Тип:${objectItem.type}</span>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-lg col-md-2" onclick="removeListElement(this, objectsList)"><span class="float-center position-sticky fa fa-trash"></span></button>
+                </div>
+            </li>`
+            objectsList.push(objectItem);
+        }
+
+        function getDistortion() {
+            let type = document.getElementById('distortionType').value;
+            return new DistortionsListItem(type);
+        }
+
+        function getVideoFormat() {
+            let format = document.getElementById('videoFormat').value;
+            return format;
+        }
+
+        function addDistortionItem(item) {
+            if (distortionsList.find(element => element.type == item.type) != undefined) {
+                alert("Такое искажение уже добавлено!");
+                return;
+            }
+
+
+            if (!item.type.length) {
+                alert("Выберите тип искажения перед добавлением!");
+                return;
+            }
+            let distortionsListElem = document.getElementById('distortionsList');
+            distortionsListElem.innerHTML += `
+            <div class="ml-3 mr-3">
+                <div class="row">
+                    <div class="alert alert-primary col" role="alert"">
+                        ${item.type}
+                    </div>
+                    <button type="button" class="btn btn-danger btn-lg col-md-2 mb-3" onclick="removeListElement(this, distortionsList)"><span class="float-center position-sticky fa fa-trash"></span></button>
+                </div>
+            </div>`
+            distortionsList.push(item);
+        }
+
+        function removeListElement(item, container) {
+            let listItemIndex = nodeIndex(item.parentNode.parentNode);
+            container.splice(listItemIndex, 1);
+            item.parentNode.parentNode.parentNode.removeChild(item.parentNode.parentNode);
+            console.log(container);
+        }
+
+        function getGenerationParametersObject() {
+            return {
+                route: routeList,
+                objects: objectsList,
+                distortions: distortionsList,
+                cameraParameters: getCameraParameters(),
+                videoFormat: getVideoFormat()
+            }
+        }
+
+        function checkGenerationParameters(parametersObject) {
+            if (!parametersObject.cameraParameters.aperture.length ||
+                !parametersObject.cameraParameters.aspectRatio.length ||
+                !parametersObject.cameraParameters.cameraId.length ||
+                !parametersObject.cameraParameters.focalDistance.length ||
+                !parametersObject.cameraParameters.FOV.length ||
+                !parametersObject.cameraParameters.FPS.length ||
+                !parametersObject.cameraParameters.ISO.length) {
+                alert("Не все параметры камеры установлены!")
+                return false;
+            }
+
+            if (!parametersObject.videoFormat.length) {
+                alert("Не выбран формат видеоданных!")
+                return false;
+            }
+
+            if (!parametersObject.route.length) {
+                alert("Не задано ни одной точки маршрута!");
+                return false;
+            }
+
+            return true;
+        }
+
+        function getGenerationParametersFile() {
+
+            let parametersObject = getGenerationParametersObject();
+            if (!checkGenerationParameters(parametersObject)) {
+                return;
+            }
+
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getGenerationParametersObject()));
+            var dlAnchorElem = document.getElementById('downloadAnchorElem');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "parameters.json");
+            dlAnchorElem.click();
+        }
+
+        let progressCount = 0;
+        let intervalId = null;
+
+        function onGenerateButtonClick() {
+            document.getElementById("generation-form").style.display = "none";
+            document.getElementById("processing-block").style.display = "block";
+            document.getElementById("processing-block-header").style.display = "block";
+            document.getElementById("generation-block-header").style.display = "none";
+
+            intervalId = setInterval(function() {
+                document.getElementsByClassName('progress-bar').item(0).setAttribute('aria-valuenow',progressCount);
+                document.getElementsByClassName('progress-bar').item(0).setAttribute('style',`width:${progressCount+25}%`);
+                document.getElementsByClassName('progress-bar').item(0).innerHTML=`${progressCount}%`
+
+                if (++progressCount > 100) {
+                    clearInterval(intervalId);
+                    onResultPageTriggered()
+                }
+            }, 50)
+        }
+
+        function onResultPageTriggered() {
+            document.getElementById("processing-block").style.display = "none";
+            document.getElementById("result-page").style.display = "block";
+            document.getElementById("processing-block-header").style.display = "none";
+            document.getElementById("result-block-header").style.display = "block";
+            document.getElementById("generation-form").style.display = "block";
+
+
+            let allControlButtons = document.getElementsByClassName('btn-block');
+            for (let i = 0; i<allControlButtons.length; i++) {
+                allControlButtons.item(i).style.display = "none";
+            }
+
+            let allFooters = document.getElementsByClassName('card-footer');
+            for (let i = 0; i<allFooters.length; i++) {
+                allFooters.item(i).style.display = "none";
+            }
+
+            let allRemoveButtons = document.getElementsByClassName('btn-danger');
+            for (let i = 0; i<allRemoveButtons.length; i++) {
+                allRemoveButtons.item(i).style.display = "none";
+            }
+
+            document.getElementById("videoFormat").style.display = "none";
+        }
+
+    </script>
+{% endblock %}

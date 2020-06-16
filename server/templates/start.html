@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block header_content %}
+    <h1 class="display-4 text-center">Интерфейс для генерации наборов видеоданных</h1>
+    <p class="lead"></p>
+    <hr class="my-4">
+    <div class="row justify-content-md-center">
+        <a class="btn btn-primary btn-lg text-center center" href="/generate/" role="button">Начать работу</a>
+    </div>
+    <p class="text-right">Выпускная квалификационная работа Шевченко Данила Витальевича</p>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <h2 class="display-5 text-left">
+            Что это?
+        </h2>
+        <br>
+        <div class="row justify-content-md-center">
+          <h5 class="col col-lg-12 display-5 text-left">
+              Веб-интерфейс, созданный для работы с генератором наборов видеоданных, предназначенный для тестирования работы алгоритмов распознавания объектов на изображении
+          </h5>
+        </div>
+        <br></br>
+        <div class="row justify-content-md-center">
+          <h6 class="col col-lg-12 text-muted">
+              Результат работы генератора - набор видеоданных сгенерированный на основе переданного пользователем описания виртуального пространства и передвижения камеры. Генератор создан в рамках выпускной квалификационной работы на тему: <p class="font-weight-bolder">"РАЗРАБОТКА ИНСТРУМЕНТОВ ПАРАМЕТРИЗОВАННОЙ ГЕНЕРАЦИИ НАБОРОВ ВИДЕОДАННЫХ ДЛЯ ЗАДАЧ КОМПЬЮТЕРНОГО ЗРЕНИЯ"</p>
+          </h6>
+        </div>
+    </div>
+{% endblock %}
