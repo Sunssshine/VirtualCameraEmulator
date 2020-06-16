@@ -1,0 +1,80 @@
+{
+	"route": [
+		{
+			"posX": "5",
+			"posY": "3",
+			"posZ": "2",
+			"duration": "4",
+			"directionX": "-5",
+			"directionY": "-3",
+			"directionZ": "-2"
+		},
+		{
+			"posX": "1",
+			"posY": "1",
+			"posZ": "1",
+			"duration": "4",
+			"directionX": "-1",
+			"directionY": "-1",
+			"directionZ": "-1"
+		},
+		{
+			"posX": "1",
+			"posY": "7",
+			"posZ": "2",
+			"duration": "4",
+			"directionX": "-1",
+			"directionY": "-7",
+			"directionZ": "-2"
+		},
+		{
+			"posX": "5",
+			"posY": "9",
+			"posZ": "18",
+			"duration": "5",
+			"directionX": "-5",
+			"directionY": "-9",
+			"directionZ": "-18"
+		}
+	],
+	"objects": [
+		{
+			"posX": "3",
+			"posY": "3",
+			"posZ": "3",
+			"scaleX": "1",
+			"scaleY": "1",
+			"scaleZ": "1",
+			"rotationX": "90",
+			"rotationY": "180",
+			"rotationZ": "0",
+			"type": "Шар"
+		},
+		{
+			"posX": "-3",
+			"posY": "-3",
+			"posZ": "-3",
+			"scaleX": "1",
+			"scaleY": "1",
+			"scaleZ": "1",
+			"rotationX": "90",
+			"rotationY": "180",
+			"rotationZ": "0",
+			"type": "Цилиндр"
+		}
+	],
+	"distortions": [
+		{ "type": "Монохроматическая абберация" },
+		{ "type": "Цифровой шум" }
+	],
+	"cameraParameters": {
+		"FOV": "1",
+		"aspectRatio": "21:9",
+		"aperture": "2",
+		"ISO": "3",
+		"FPS": "4",
+		"focalDistance": "5",
+		"cameraId": "6"
+	},
+	"videoFormat": ".MP4"
+}
