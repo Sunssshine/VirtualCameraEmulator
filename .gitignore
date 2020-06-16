@@ -77,3 +77,13 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 /*.code-workspace
 /.vscode
+
+# Python
+venv
+__pycache__
+
+# Video
+*.mpg
+
+# IDE
+.idea
