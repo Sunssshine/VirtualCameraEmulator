@@ -18,6 +18,7 @@
 *.so
 *.dylib
 *.dll
+!server/bin/*.dll
 
 # Fortran module files
 *.mod
@@ -30,6 +31,7 @@
 
 # Executables
 *.exe
+!server/bin/*.exe
 *.out
 *.app
 *.ipa
