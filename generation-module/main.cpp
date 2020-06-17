@@ -784,6 +784,10 @@ int main(int, char**)
 		ffmpeg_encoder_glread_rgb(&rgb, &pixels, WIDTH, HEIGHT);
 		ffmpeg_encoder_encode_frame(rgb);
 		nframes++;
+
+		if (cameraDriver.getCurrentRoute().empty()) {
+			break;
+		}
     }
 
 	deinit();

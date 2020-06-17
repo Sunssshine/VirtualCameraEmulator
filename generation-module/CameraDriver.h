@@ -16,6 +16,9 @@ public:
 	CameraDriver(Camera* camera);
 	void addRoutePoint(const CameraRoutePoint& point);
 	void update(float delta);
+
+	std::list<CameraRoutePoint> getCurrentRoute() const;
+	
 private:
 	std::list<CameraRoutePoint> currentRoute;
 	Camera* camera = nullptr;

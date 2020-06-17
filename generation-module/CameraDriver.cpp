@@ -31,3 +31,7 @@ void CameraDriver::update(float delta) {
 	currentRoutePoint.duration -= delta;
 	camera->setCameraPosition(newCameraPos);
 }
+
+std::list<CameraRoutePoint> CameraDriver::getCurrentRoute() const {
+	return currentRoute;
+}
