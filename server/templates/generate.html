@@ -362,21 +362,49 @@
         let intervalId = null;
 
         function onGenerateButtonClick() {
+            let parametersObject = getGenerationParametersObject();
+            if (!checkGenerationParameters(parametersObject)) {
+                return;
+            }
+
             document.getElementById("generation-form").style.display = "none";
             document.getElementById("processing-block").style.display = "block";
             document.getElementById("processing-block-header").style.display = "block";
             document.getElementById("generation-block-header").style.display = "none";
 
+            let totalDuration = 0;
+            for (let i = 0; i < routeList.length; i++) {
+                totalDuration += Number(routeList[i].duration)
+            }
+
+            console.log(totalDuration)
+
             intervalId = setInterval(function() {
                 document.getElementsByClassName('progress-bar').item(0).setAttribute('aria-valuenow',progressCount);
-                document.getElementsByClassName('progress-bar').item(0).setAttribute('style',`width:${progressCount+25}%`);
+                document.getElementsByClassName('progress-bar').item(0).setAttribute('style',`width:${progressCount}%`);
                 document.getElementsByClassName('progress-bar').item(0).innerHTML=`${progressCount}%`
 
                 if (++progressCount > 100) {
                     clearInterval(intervalId);
-                    onResultPageTriggered()
                 }
-            }, 50)
+            }, totalDuration * 10)
+
+            var dataStr = JSON.stringify(getGenerationParametersObject());
+
+            console.log(dataStr);
+            $.ajax({
+                url: '/generate_data',
+                data: JSON.stringify(dataStr),
+                contentType: 'application/json;charset=UTF-8',
+                type: 'POST',
+                success: function (response) {
+                    console.log(response);
+                    onResultPageTriggered();
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            })
         }
 
         function onResultPageTriggered() {
@@ -385,7 +413,6 @@
             document.getElementById("processing-block-header").style.display = "none";
             document.getElementById("result-block-header").style.display = "block";
             document.getElementById("generation-form").style.display = "block";
-
 
             let allControlButtons = document.getElementsByClassName('btn-block');
             for (let i = 0; i<allControlButtons.length; i++) {
@@ -404,6 +431,6 @@
 
             document.getElementById("videoFormat").style.display = "none";
         }
-
     </script>
+
 {% endblock %}
